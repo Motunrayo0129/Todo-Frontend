@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Tasks | To-Do App</title>
+  <link rel="stylesheet" href="to_do_task.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <button class="menu-btn">☰</button>
+      <h2 class="logo">TaskMaster</h2>
+    </div>
+
+    <div class="nav-center">
+      <input type="text" id="search" placeholder="Search">
+    </div>
+
+    <div class="nav-right">
+      <button class="new-task-btn" id="openTaskForm">+ New Task</button>
+      <span class="user-name" id="username">Loading...</span>
+      <button id="logout-btn" class="logout-btn">Logout</button>
+
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>My Tasks</h1>
+    <section class="table-wrapper">
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Priority</th>
+          <th>Added Date</th>
+          <th>Completed Date</th>
+          <th>Status</th>
+          <th>MarkAsCompleted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="taskList">
+        <!-- Tasks will be rendered here -->
+      </tbody>
+    </table>
+    </section>
+  </main>
+
+ <!-- Modal for editing tasks -->
+<div class="modal" id="editTaskModal">
+  <div class="modal-content">
+    <h2>Edit Task</h2>
+    <form id="editTaskForm">
+      <input type="text" id="editTaskName" placeholder="Task name" required>
+      <select id="editPriority" required>
+        <option value="">Select priority</option>
+        <option value="HIGH">HIGH</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="LOW">LOW</option>
+      </select>
+      <div class="form-actions">
+        <button type="submit">Update Task</button>
+        <button type="button" id="closeEditForm">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <!-- Modal for adding new tasks -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <h2>Add New Task</h2>
+      <form id="taskForm">
+        <input type="text" id="taskName" placeholder="Task name" required>
+        <select id="priority" required>
+          <option value="">Select priority</option>
+          <option value="High">HIGH</option>
+          <option value="Medium">MEDIUM</option>
+          <option value="Low">LOW</option>
+        </select>
+        <div class="form-actions">
+          <button type="submit">Save Task</button>
+          <button type="button" id="closeTaskForm">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="to_do_task.js"></script>
+</body>
+</html>
