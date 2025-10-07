@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>${task.dateCompleted || "N/A"}</td>
         <td>
           <td>
-              <input type="checkbox" class="complete-checkbox" data-id="${task.id}" ${task.isCompleted ? "true" : "false"}>
+              <input type="checkbox" class="complete-checkbox" data-id="${task.taskId}" ${task.isCompleted ? "Completed" : "Pending"}>
             </td>
         <td class="actions">
         </td>
@@ -94,14 +94,14 @@ document.addEventListener("DOMContentLoaded", function () {
 const editBtn = document.createElement("button");
 editBtn.textContent = "Edit";
 
-editBtn.onclick = () => editTask(task.id, task.title, task.priority);
+editBtn.onclick = () => editTask(task.taskId, task.title, task.priority);
 actionsCell.appendChild(editBtn);
 
 
       // Delete button
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
-      deleteBtn.onclick = () => deleteTask(task.id);
+      deleteBtn.onclick = () => deleteTask(task.taskId);
       actionsCell.appendChild(deleteBtn);
 
       taskList.appendChild(row);
@@ -149,22 +149,6 @@ actionsCell.appendChild(editBtn);
     }
   });
 
-  // Mark task as complete
-// async function markAsCompleted(taskId, completed) {
-//   try {
-//     const response = await fetch(`${API_BASE}/markAsCompleted/${taskId}`, {
-//       method: "PATCH",
-//       headers: { "Content-Type": "application/json" },
-//     });
-
-//     if (!response.ok) throw new Error("Failed to update task");
-//     fetchTasks(); 
-//   } catch (error) {
-//     console.error("Error marking task as completed:", error);
-//     alert("Error updating task.");
-//   }
-// }
-
 async function markAsCompleted(taskId) {
   try {
     const response = await fetch(`${API_BASE}/markAsCompleted/${taskId}`, {
@@ -173,7 +157,7 @@ async function markAsCompleted(taskId) {
     });
     if (!response.ok) throw new Error("Failed to update task");
     console.log(response)
-    // fetchTasks(); 
+    fetchTasks(); 
   } catch (error) {
     console.error("Error marking task as completed:", error);
     alert("Error updating task.");
@@ -188,7 +172,7 @@ async function editTask(taskId, oldTitle, oldPriority) {
   if (!newTitle || !newPriority) return;
 
   const body = { title: newTitle, priority: newPriority.toUpperCase() };
-  const url = `${API_BASE}/updateTask/${taskId}`;
+  const url = `${API_BASE}/editTask/${taskId}`;
 
   console.log("Sending update:", body);
   console.log("PUT URL:", url);
