@@ -21,13 +21,19 @@ body {
   justify-content: space-between;
   align-items: center;
   background: #fff;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
   padding: 12px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.nav-left {
+.nav-left,
+.nav-center {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+
 }
 
 .menu-btn {
@@ -49,12 +55,14 @@ body {
   border: 1px solid #ddd;
   border-radius: 20px;
   width: 200px;
+  min-width: 150px;
 }
 
 .nav-right {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-shrink: 0;
 }
 
 .new-task-btn {
@@ -66,6 +74,39 @@ body {
   cursor: pointer;
   transition: background 0.2s ease;
 }
+
+/* ================================
+   ACTION BUTTONS (Edit / Delete)
+================================ */
+.edit-btn,
+.delete-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+  margin-right: 6px;
+}
+
+.edit-btn {
+  background-color: gray;
+  color: #222;
+}
+
+.edit-btn:hover {
+  background-color: yellow;
+}
+
+.delete-btn {
+  background-color: gray;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background-color: red;
+}
+
 
 .new-task-btn:hover {
   background: #0056b3;
@@ -102,7 +143,7 @@ body {
 .table-wrapper {
   padding: 0;
   margin: 20px 0;
-  overflow-x: auto; /* allow horizontal scroll if table overflows */
+  overflow-x: auto; 
 }
 
 h1 {
@@ -117,21 +158,20 @@ h1 {
 .task-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* ✅ ensures columns align perfectly */
+  table-layout: fixed; 
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* consistent padding & alignment */
 .task-table th,
 .task-table td {
   padding: 12px 15px;
   border-bottom: 1px solid #eee;
   text-align: left;
   box-sizing: border-box;
-  white-space: nowrap; /* keep things on one line for better alignment */
+  white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -149,13 +189,13 @@ h1 {
   background: #f9f9f9;
 }
 
-/* ✅ “No tasks yet” row */
+
 .no-task-row td {
   text-align: center;
   background-color: #f0f0f0;
   font-weight: 500;
   color: #555;
-  white-space: normal; /* allow message to wrap naturally */
+  white-space: normal; 
 }
 
 /* Completed tasks */
@@ -164,14 +204,48 @@ tr.completed td {
   color: gray;
   opacity: 0.7;
 }
-
-/* Checkbox */
+/* ================================
+   CUSTOM CHECKBOX STYLE
+================================ */
 .complete-checkbox {
-  width: 18px;
-  height: 18px;
+  appearance: none;           /* remove default browser style */
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
   cursor: pointer;
-  accent-color: green;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+  background-color: #fff;
 }
+
+.complete-checkbox:hover {
+  border-color: #888;
+}
+
+.complete-checkbox:checked {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.complete-checkbox:checked::after {
+  content: "✔";
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  top: 0;
+  left: 3px;
+}
+
+tr.completed td {
+  text-decoration: line-through;
+  color: #777;
+  opacity: 0.7;
+}
+
+
 
 /* ================================
    MODALS

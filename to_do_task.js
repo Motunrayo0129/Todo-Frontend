@@ -5,10 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const openTaskFormBtn = document.getElementById("openTaskForm");
   const closeTaskFormBtn = document.getElementById("closeTaskForm");
   const taskModal = document.getElementById("taskModal");
+  const searchInput = document.getElementById("search");
 
   const USER_ID = localStorage.getItem("userId");
   const USERNAME = localStorage.getItem("username");
   const userNameSpan = document.getElementById("username");
+
+  let allTasks = [];
 
   if (USERNAME) {
     userNameSpan.textContent = USERNAME;
@@ -39,6 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
     taskModal.style.display = "none";
   });
 
+
+
   // Fetch all tasks
   async function fetchTasks() {
     try {
@@ -46,12 +51,23 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) throw new Error("Failed to fetch tasks");
 
       const tasks = await response.json();
+      allTasks = tasks;
       renderTasks(tasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       alert("Error fetching tasks. Please try again later.");
     }
   }
+
+  // Search tasks
+  searchInput.addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+    const filteredTasks = allTasks.filter((task) =>
+      task.title.toLowerCase().includes(query) ||
+      task.priority.toLowerCase().includes(query)
+    );
+    renderTasks(filteredTasks);
+  });
 
   // Render tasks
   function renderTasks(tasks) {
@@ -64,28 +80,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     tasks.forEach((task) => {
+      task.isCompleted = task.dateCompleted ? true : false;
       const row = document.createElement("tr");
+      
 
       row.innerHTML = `
-        <td>${task.title}</td>
-        <td>${task.priority}</td>
-        <td>${task.dateAdded || "N/A"}</td>
-        <td>${task.dateCompleted || "N/A"}</td>
-        <td>
-          <td>
-              <input type="checkbox" class="complete-checkbox" data-id="${task.taskId}" ${task.isCompleted ? "Completed" : "Pending"}>
-            </td>
-        <td class="actions">
-        </td>
-      `;
+  <td>${task.title}</td>
+  <td>${task.priority}</td>
+  <td>${task.dateAdded || "N/A"}</td>
+  <td>${task.dateCompleted || "N/A"}</td>
+  <td>${task.isCompleted ? "Completed" : "Pending"}</td>
+  <td>
+    <input type="checkbox" class="complete-checkbox" data-id="${task.taskId}" ${task.isCompleted ? "checked" : ""}>
+  </td>
+  <td class="actions"></td>
+`;
 
-      // Status checkbox
-      const checkbox = row.querySelector(".complete-checkbox");
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) {
-          markAsCompleted(task.id);
-        }
-      });
+
+
+const checkbox = row.querySelector(".complete-checkbox");
+const statusCell = row.children[4]; 
+checkbox.addEventListener("change", async () => {
+  if (checkbox.checked) {
+    row.classList.add("completed"); 
+    statusCell.textContent = "Completed";
+    await markAsCompleted(task.taskId);
+  } else {
+    row.classList.remove("completed");
+    statusCell.textContent = "Pending"; 
+    await unmarkAsCompleted(task.taskId);
+  }
+});  
 
       // Actions column
       const actionsCell = row.querySelector(".actions");
@@ -93,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Edit button
 const editBtn = document.createElement("button");
 editBtn.textContent = "Edit";
-
+editBtn.classList.add("edit-btn");
 editBtn.onclick = () => editTask(task.taskId, task.title, task.priority);
 actionsCell.appendChild(editBtn);
 
@@ -101,6 +126,7 @@ actionsCell.appendChild(editBtn);
       // Delete button
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
+      deleteBtn.classList.add("delete-btn");
       deleteBtn.onclick = () => deleteTask(task.taskId);
       actionsCell.appendChild(deleteBtn);
 
@@ -126,7 +152,7 @@ actionsCell.appendChild(editBtn);
     let addTaskRequest = {
       title,
       priority: priority.toUpperCase(),
-      dateAdded: Date.now(),
+      // dateAdded: new Date().toISOString(),
       userId: USER_ID
     };
 
@@ -156,13 +182,27 @@ async function markAsCompleted(taskId) {
       headers: { "Content-Type": "application/json" },
     });
     if (!response.ok) throw new Error("Failed to update task");
-    console.log(response)
     fetchTasks(); 
   } catch (error) {
     console.error("Error marking task as completed:", error);
     alert("Error updating task.");
   }
 }
+
+async function unmarkAsCompleted(taskId) {
+  try {
+    const response = await fetch(`${API_BASE}/unmarkAsCompleted/${taskId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!response.ok) throw new Error("Failed to update task");
+    fetchTasks(); 
+  } catch (error) {
+    console.error("Error unmarking task as completed:", error);
+    alert("Error updating task.");
+  }
+}
+
 
 
 async function editTask(taskId, oldTitle, oldPriority) {
@@ -192,7 +232,6 @@ async function editTask(taskId, oldTitle, oldPriority) {
     console.error("Error updating task:", error);
   }
 }
-
 
 // Delete task
   async function deleteTask(taskId) {
